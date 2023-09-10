@@ -1,0 +1,42 @@
+class UniLM:
+    def __init__(self):
+        self.models = {}
+        self.pretraining_tasks = ['unidirectional', 'bidirectional', 'sequence-to-sequence']
+        
+    def pretrain(self, model_name, task):
+        if task not in self.pretraining_tasks:
+            raise ValueError(f"Invalid pretraining task. Supported tasks: {', '.join(self.pretraining_tasks)}")
+        
+        if model_name not in self.models:
+            self.models[model_name] = []
+        
+        self.models[model_name].append(task)
+    
+    def fine_tune(self, model_name, nlu_task, generation_task):
+        if model_name not in self.models:
+            raise ValueError("Model not found. Please pretrain the model first.")
+        
+        # Fine-tuning code for natural language understanding (NLU) and generation tasks
+        print(f"Fine-tuning {model_name} for NLU task: {nlu_task}")
+        print(f"Fine-tuning {model_name} for generation task: {generation_task}")
+        
+    def add_new_models(self, *new_models):
+        for model in new_models:
+            if model not in self.models:
+                self.models[model] = []
+            print(f"New model added: {model}")
+
+# Create a UniLM instance
+unilm = UniLM()
+
+# Pretrain UniLM models
+unilm.pretrain("UniLMv1", "unidirectional")
+unilm.pretrain("UniLMv2", "bidirectional")
+unilm.pretrain("UniLMv3", "sequence-to-sequence")
+
+# Fine-tune UniLM models for NLU and generation tasks
+unilm.fine_tune("UniLMv1", "Text Classification", "Text Generation")
+unilm.fine_tune("UniLMv2", "Translation", "Summarization")
+
+# Add new pre-trained models
+unilm.add_new_models("BEiT-3", "SimLM", "DiT", "LayoutLMv3", "MetaLM")
