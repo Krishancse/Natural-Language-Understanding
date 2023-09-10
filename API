@@ -63,6 +63,65 @@ If you have any questions, suggestions, or feedback, please feel free to reach o
 
 We would like to thank the open-source community for their contributions and support in making this project possible.
 
----
+---import torch
+import tensorflow as tf
+from transformers import AutoTokenizer, AutoModel
+
+class UnifiedPretrainedModel:
+    def __init__(self, framework='pytorch'):
+        if framework not in ['pytorch', 'tensorflow']:
+            raise ValueError("Framework must be 'pytorch' or 'tensorflow'")
+        self.framework = framework
+        self.tokenizer = None
+        self.model = None
+
+    def load_model(self, model_name):
+        if self.framework == 'pytorch':
+            self.tokenizer = AutoTokenizer.from_pretrained(model_name)
+            self.model = AutoModel.from_pretrained(model_name)
+        elif self.framework == 'tensorflow':
+            self.tokenizer = AutoTokenizer.from_pretrained(model_name)
+            self.model = tf.keras.models.load_model(model_name)
+        else:
+            raise ValueError("Invalid framework")
+
+    def infer(self, input_data):
+        if self.model is None:
+            raise ValueError("Model not loaded. Use load_model() first.")
+        
+        inputs = self.tokenizer(input_data, return_tensors='pt' if self.framework == 'pytorch' else 'tf')
+        
+        if self.framework == 'pytorch':
+            with torch.no_grad():
+                outputs = self.model(**inputs)
+                return outputs.last_hidden_state
+        elif self.framework == 'tensorflow':
+            outputs = self.model(inputs)
+            return outputs
+
+# Usage example
+if __name__ == "__main__":
+    # Initialize the API for PyTorch
+    api_pytorch = UnifiedPretrainedModel(framework='pytorch')
+    api_pytorch.load_model('bert-base-uncased')
+
+    # Perform inference
+    input_text = "This is an example sentence."
+    pytorch_output = api_pytorch.infer(input_text)
+
+    # Initialize the API for TensorFlow
+    api_tf = UnifiedPretrainedModel(framework='tensorflow')
+    api_tf.load_model('bert-base-uncased')
+
+    # Perform inference
+    tensorflow_output = api_tf.infer(input_text)
+
+    # Display results
+    print("PyTorch Output:")
+    print(pytorch_output)
+
+    print("\nTensorFlow Output:")
+    print(tensorflow_output)
+
 
 This project aims to simplify the usage of pre-trained models across different deep learning frameworks, providing AI practitioners with a unified and accessible tool for their NLP, computer vision, and audio tasks.
