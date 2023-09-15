@@ -1,0 +1,47 @@
+import spacy
+
+# Load the pre-trained English language model
+nlp = spacy.load('en_core_web_sm')
+
+# Example text to be analyzed
+text = """
+Apple Inc. is an American multinational technology company headquartered in Cupertino, California. 
+It was founded by Steve Jobs, Steve Wozniak, and Ronald Wayne in April 1976.
+"""
+
+# Process the text with spaCy NLP pipeline
+doc = nlp(text)
+
+# Extract and classify named entities
+entities = [(ent.text, ent.label_) for ent in doc.ents]
+
+# Print the identified entities and their categories
+print("Identified Entities:")
+for entity, label in entities:
+    print(f"Entity: {entity}, Label: {label}")
+
+# Evaluate the accuracy (For this example, you can manually compare the output with the ground truth)
+# In practice, you would use labeled datasets and metrics like F1-score for evaluation.
+
+# Example ground truth (replace with actual labels from your dataset)
+ground_truth = [
+    ("Apple Inc.", "ORG"),
+    ("Cupertino, California", "GPE"),
+    ("Steve Jobs", "PERSON"),
+    ("Steve Wozniak", "PERSON"),
+    ("Ronald Wayne", "PERSON"),
+    ("April 1976", "DATE"),
+]
+
+# Calculate accuracy
+correct = 0
+total = len(ground_truth)
+
+for entity, label in entities:
+    if (entity, label) in ground_truth:
+        correct += 1
+
+accuracy = correct / total
+
+# Print the accuracy
+print(f"Accuracy: {accuracy * 100:.2f}%")
