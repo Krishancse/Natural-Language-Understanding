@@ -1,0 +1,48 @@
+# Sample document collection
+documents = [
+    "This is the first document.",
+    "This document is the second document.",
+    "And this is the third one.",
+    "Is this the first document?"
+]
+
+# Create an inverted index
+inverted_index = {}
+
+for doc_id, doc_text in enumerate(documents):
+    words = doc_text.split()
+    for word in words:
+        if word not in inverted_index:
+            inverted_index[word] = set()
+        inverted_index[word].add(doc_id)
+
+# Function to perform a text-based search
+def text_search(query):
+    query_words = query.split()
+    if not query_words:
+        return "Please enter a query."
+
+    # Initialize the result set with the document IDs containing the first query word
+    result_set = inverted_index.get(query_words[0], set())
+
+    # Perform set intersection with the document IDs of other query words
+    for word in query_words[1:]:
+        if word in inverted_index:
+            result_set &= inverted_index[word]
+
+    if not result_set:
+        return "No matching documents found."
+
+    # Retrieve and return matching documents
+    results = [documents[doc_id] for doc_id in result_set]
+    return results
+
+# Interactive search
+while True:
+    user_query = input("Enter your query (or 'exit' to quit): ")
+    if user_query.lower() == 'exit':
+        break
+    search_results = text_search(user_query)
+    print("\nSearch Results:")
+    for i, result in enumerate(search_results, 1):
+        print(f"{i}. {result}\n")
