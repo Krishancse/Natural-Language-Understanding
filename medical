@@ -1,0 +1,45 @@
+import random
+
+# Sample medical knowledge database
+medical_database = {
+    "symptoms": {
+        "fever": "Fever is a common symptom of various illnesses, including infections.",
+        "headache": "Headaches can be caused by stress, tension, or medical conditions.",
+        "cough": "Coughing can be due to respiratory infections or allergies.",
+    },
+    "diagnoses": {
+        "flu": "Influenza (flu) is a viral infection that causes fever, cough, and body aches.",
+        "migraine": "Migraine is a type of headache characterized by severe pain and other symptoms.",
+    },
+    "treatments": {
+        "rest": "Rest is essential for recovery from various illnesses.",
+        "medication": "Medications may be prescribed to manage symptoms or treat the underlying condition.",
+    },
+}
+
+# Function to provide a medical response
+def get_medical_response(user_input):
+    user_input = user_input.lower()
+    response = "I'm not sure how to respond to that."
+
+    for category, data in medical_database.items():
+        for keyword, info in data.items():
+            if keyword in user_input:
+                response = info
+                break
+
+    return response
+
+# Interactive conversation with the health assistant
+print("Text-Based Health Assistant")
+print("You can ask about symptoms, diagnoses, or treatments. Type 'exit' to quit.")
+
+while True:
+    user_input = input("You: ")
+    
+    if user_input.lower() == 'exit':
+        print("Health Assistant: Goodbye!")
+        break
+    
+    response = get_medical_response(user_input)
+    print("Health Assistant:", response)
