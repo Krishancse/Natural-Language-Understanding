@@ -1,0 +1,75 @@
+# Import necessary libraries
+import pandas as pd
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.model_selection import train_test_split
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.metrics import accuracy_score, classification_report
+from tkinter import *
+
+# Load and preprocess the dataset
+def load_and_preprocess_data():
+    # Load your dataset (CSV, Excel, or other formats)
+    # For this example, let's assume you have a CSV file with columns 'text' and 'label'
+    data = pd.read_csv("your_dataset.csv")
+    
+    # Split data into features (X) and labels (y)
+    X = data['text']
+    y = data['label']
+    
+    # Split data into training and testing sets
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    
+    # Feature extraction using TF-IDF
+    tfidf_vectorizer = TfidfVectorizer(max_features=5000)
+    X_train_tfidf = tfidf_vectorizer.fit_transform(X_train)
+    X_test_tfidf = tfidf_vectorizer.transform(X_test)
+    
+    return X_train_tfidf, X_test_tfidf, y_train, y_test
+
+# Train a text classification model
+def train_text_classifier(X_train, y_train):
+    classifier = MultinomialNB()
+    classifier.fit(X_train, y_train)
+    return classifier
+
+# Evaluate the model and display results
+def evaluate_model(classifier, X_test, y_test):
+    y_pred = classifier.predict(X_test)
+    accuracy = accuracy_score(y_test, y_pred)
+    report = classification_report(y_test, y_pred)
+    print("Accuracy:", accuracy)
+    print("Classification Report:\n", report)
+
+# Create a simple GUI for text classification
+def classify_text():
+    text_to_classify = text_input.get("1.0", "end-1c")
+    text_to_classify_tfidf = tfidf_vectorizer.transform([text_to_classify])
+    predicted_class = classifier.predict(text_to_classify_tfidf)
+    result_label.config(text="Predicted Class: " + predicted_class[0])
+
+# Load and preprocess data
+X_train, X_test, y_train, y_test = load_and_preprocess_data()
+
+# Train the text classification model
+classifier = train_text_classifier(X_train, y_train)
+
+# Evaluate the model on the test set
+evaluate_model(classifier, X_test, y_test)
+
+# Create a simple GUI for text classification using Tkinter
+root = Tk()
+root.title("Text Classification")
+
+text_label = Label(root, text="Enter text to classify:")
+text_label.pack()
+
+text_input = Text(root, height=5, width=40)
+text_input.pack()
+
+classify_button = Button(root, text="Classify", command=classify_text)
+classify_button.pack()
+
+result_label = Label(root, text="")
+result_label.pack()
+
+root.mainloop()
