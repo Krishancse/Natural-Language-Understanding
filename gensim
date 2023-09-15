@@ -1,0 +1,19 @@
+import gensim
+from gensim.summarization import summarize
+
+# Function to read text from a file
+def read_text_from_file(file_path):
+    with open(file_path, 'r', encoding='utf-8') as file:
+        text = file.read()
+    return text
+
+# Example: Replace 'your_document.txt' with the path to your text document
+file_path = 'your_document.txt'
+text = read_text_from_file(file_path)
+
+# Perform extractive summarization using Gensim's TextRank
+summary = summarize(text)
+
+# Print the generated summary
+print("Extractive Summary:")
+print(summary)
